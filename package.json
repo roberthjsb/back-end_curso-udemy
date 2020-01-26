@@ -4,12 +4,21 @@
   "description": "Backend server curso angular avanzado",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js",
+    "dev": "nodemon --watch ./ app.js",
+    "debug": "nodemon --inspect ./"
   },
   "author": "Roberth Salazar",
   "license": "ISC",
   "dependencies": {
+    "@types/mongoose": "^5.5.42",
+    "bcryptjs": "^2.4.3",
+    "body-parse": "^0.1.0",
+    "body-parser": "^1.19.0",
     "express": "^4.17.1",
-    "mongoose": "^5.8.9"
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.8.9",
+    "mongoose-unique-validator": "^2.0.3"
   }
 }
