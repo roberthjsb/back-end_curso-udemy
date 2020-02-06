@@ -1,14 +1,13 @@
-var express = require('express');
-var bcrypt = require('bcryptjs');
+const express = require('express');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const SEED = require('../config/config').SEED;
+const mAutenticacion = require('../middleware/autenticacion');
 
-var jwt = require('jsonwebtoken');
-var SEED= require('../config/config').SEED;
-var mAutenticacion = require('../middleware/autenticacion');
 
+const app = express();
 
-var app = express();
-
-var Usuario = require('../models/usuario');
+const Usuario = require('../models/usuario');
 
 app.get('/', (req, res, next) => {
     console.log('GET buscando usuarios...')
@@ -30,26 +29,22 @@ app.get('/', (req, res, next) => {
         })
 });
 
-app.use('/',(req, res, next)=>{
-
+app.use('/', (req, res, next) => {
     let token = req.query.token;
-    jwt.verify(token,SEED,(err,decoded)=>{
-
-        if(err){
+    jwt.verify(token, SEED, (err, decoded) => {
+        if (err) {
             return res.status(401).json({
                 ok: false,
-                mensaje: 'token incorrecto.'
-                , error: err
+                mensaje: 'token incorrecto.',
+                error: err
             });
-
         }
         next();
-
     })
 })
 
 
-app.post('/', mAutenticacion.verify,(req, res) => {
+app.post('/', mAutenticacion.verify, (req, res) => {
 
     let body = req.body;
     let usuario = new Usuario({
@@ -59,7 +54,7 @@ app.post('/', mAutenticacion.verify,(req, res) => {
         img: body.img,
         role: body.role,
     });
-    usuario.save((err,usuarioGuadado)=>{
+    usuario.save((err, usuarioGuardado) => {
         if (err) {
             return res.status(400).json({
                 ok: false,
@@ -70,15 +65,15 @@ app.post('/', mAutenticacion.verify,(req, res) => {
         }
         return res.status(201).json({
             ok: true,
-            usuarios: usuarioGuadado
+            usuarios: usuarioGuardado
         });
     })
 });
 
-app.put('/:id',mAutenticacion.verify, (req, res) => {
+app.put('/:id', mAutenticacion.verify, (req, res) => {
     let id = req.params.id;
-    let body=req.body;
-    Usuario.findById(id,(err, usuario)=>{
+    let body = req.body;
+    Usuario.findById(id, (err, usuario) => {
         if (err) {
             console.log('\x1b[32m%s\x1b[0m Express server error:');
             return res.status(500).json({
@@ -91,14 +86,14 @@ app.put('/:id',mAutenticacion.verify, (req, res) => {
             return res.status(400).json({
                 ok: false,
                 mensaje: `Usuario con id ${id} no existe`
-                , error:{message:'No existe usuario con este ID'}
+                , error: { message: 'No existe usuario con este ID' }
             });
         }
         usuario.nombre = body.nombre;
         usuario.email = body.email;
         usuario.role = body.role;
-        
-        usuario.save((err,usuarioGuardado)=>{
+
+        usuario.save((err, usuarioGuardado) => {
             if (err) {
                 if (err) {
                     return res.status(500).json({
@@ -113,23 +108,23 @@ app.put('/:id',mAutenticacion.verify, (req, res) => {
                     , error: err
                 });
             }
-            usuarioGuardado.password='********'
+            usuarioGuardado.password = '********'
             return res.status(200).json({
                 ok: true,
-                usuarios:usuarioGuardado
+                usuarios: usuarioGuardado
             });
         })
-        
-        
+
+
     });
 
 });
 
-app.delete('/:id',mAutenticacion.verify, (req, res) => {
+app.delete('/:id', mAutenticacion.verify, (req, res) => {
     let id = req.params.id;
-    let body=req.body;
+    let body = req.body;
 
-    Usuario.findByIdAndDelete(id,(err,usuarios)=>{
+    Usuario.findByIdAndDelete(id, (err, usuarios) => {
         if (err) {
             return res.status(500).json({
                 ok: false,
@@ -137,10 +132,10 @@ app.delete('/:id',mAutenticacion.verify, (req, res) => {
                 , error: err
             });
         }
-        usuarios.password='********'
+        usuarios.password = '********'
         return res.status(200).json({
             ok: true,
-            usuarios:usuarios
+            usuarios: usuarios
         });
     })
 })
