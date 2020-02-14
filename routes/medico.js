@@ -7,20 +7,29 @@ const app = express();
 
 
 app.get('/', (req, res) => {
-    Medico.find({}, (err, medico) => {
-        if (err) {
-            return res.status(500).json({
-                ok: false,
-                mensaje: 'Error cargando médico.'
-                , error: err
-            });
-        }
-        return res.status(200).json({
-            ok: true,
-            medicos: medico
-        });
-    });
+    let desde = req.query.desde || 0;
+    desde = Number(desde);
+    Medico.find({})
+    .skip(desde)
+    .limit(5)
+        .populate('usuario', 'nombre email').populate('hospital', 'nombre')
+        .exec((err, medico) => {
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    mensaje: 'Error cargando médico.'
+                    , error: err
+                });
+            }
+            Medico.count({}).exec((error,conteo)=>{
+                return res.status(200).json({
+                    ok: true,
+                    medicos: medico,
+                    total: conteo
+                });
+            })
 
+        });
 });
 
 app.use('/', (req, res, next) => {
@@ -38,33 +47,33 @@ app.use('/', (req, res, next) => {
 })
 
 
-app.post('/',mAutenticacion.verify,(req, res) => {
-let body =req.body;
+app.post('/', mAutenticacion.verify, (req, res) => {
+    let body = req.body;
 
-let medico= new Medico({
-    nombre:body.nombre,
-    img:body.img,
-    usuario:body.usuario,
-    hospital:body.hospital,
-});
-
-medico.save((err,medicoGuardado)=>{
-    if (err) {
-        return res.status(500).json({
-            ok: false,
-            mensaje: 'Error cargando hospitales.'
-            , error: err
-        });
-    }
-    return res.status(201).json({
-        ok: true,
-        hospital: medicoGuardado
+    let medico = new Medico({
+        nombre: body.nombre,
+        img: body.img,
+        usuario: body.usuario,
+        hospital: body.hospital,
     });
 
-})
+    medico.save((err, medicoGuardado) => {
+        if (err) {
+            return res.status(500).json({
+                ok: false,
+                mensaje: 'Error cargando hospitales.'
+                , error: err
+            });
+        }
+        return res.status(201).json({
+            ok: true,
+            hospital: medicoGuardado
+        });
+
+    })
 });
 
-app.put('/:id',mAutenticacion.verify, (req, res) => {
+app.put('/:id', mAutenticacion.verify, (req, res) => {
     let id = req.params.id;
     let body = req.body;
     Medico.findById(id, (err, medicoActualizado) => {
@@ -84,10 +93,10 @@ app.put('/:id',mAutenticacion.verify, (req, res) => {
             });
         }
 
-        medicoActualizado.nombre =body.nombre;
-        medicoActualizado.img =body.img;
-        medicoActualizado.usuario =body.usuario;
-        medicoActualizado.hospital =body.hospital;
+        medicoActualizado.nombre = body.nombre;
+        medicoActualizado.img = body.img;
+        medicoActualizado.usuario = body.usuario;
+        medicoActualizado.hospital = body.hospital;
 
         medicoActualizado.save((err, medicoGuardado) => {
             if (err) {
@@ -112,7 +121,7 @@ app.put('/:id',mAutenticacion.verify, (req, res) => {
     });
 });
 
-app.delete('/:id',mAutenticacion.verify, (req, res) => {
+app.delete('/:id', mAutenticacion.verify, (req, res) => {
     let id = req.params.id;
     let body = req.body;
 

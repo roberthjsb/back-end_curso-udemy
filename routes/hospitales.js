@@ -5,9 +5,14 @@ const mAutenticacion = require('../middleware/autenticacion');
 const Hospitales = require('../models/Hopitales');
 const app = express();
 
-
 app.get('/', (req, res) => {
-    Hospitales.find({}, (err, hospitales) => {
+    let desde = req.query.desde || 0;
+    desde = Number(desde);
+    Hospitales.find({})
+    .skip(desde)
+    .limit(5)
+    .populate('usuario','nombre email')
+    .exec( (err, hospitales) => {
         if (err) {
             return res.status(500).json({
                 ok: false,
@@ -15,12 +20,14 @@ app.get('/', (req, res) => {
                 , error: err
             });
         }
-        return res.status(200).json({
-            ok: true,
-            hospitales: hospitales
-        });
+        Medico.count({}).exec((error,conteo)=>{
+            return res.status(200).json({
+                ok: true,
+                hospitales: hospitales,
+                total: conteo
+            });
+        })
     });
-
 });
 
 app.use('/', (req, res, next) => {
@@ -40,16 +47,11 @@ app.use('/', (req, res, next) => {
 
 app.post('/',mAutenticacion.verify,(req, res) => {
 let body =req.body;
-console.log('AQUI....');
-console.log({body});
-
 let hospital= new Hospitales({
     nombre: body.nombre,
     img: body.img,
     usuario: body.usuario
 });
-console.log('AQUI....2');
-
 hospital.save((err,hospitalGuardado)=>{
     if (err) {
         return res.status(500).json({
