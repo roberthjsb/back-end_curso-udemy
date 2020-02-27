@@ -52,7 +52,7 @@ app.post('/', (req, res) => {
     });
 });
 
-async function verifyGoogleAuthentication() {
+async function verifyGoogleAuthentication(token) {
     const ticket = await client.verifyIdToken({
         idToken: token,
         audience: CLIENT_ID,  // Specify the CLIENT_ID of the app that accesses the backend
@@ -72,6 +72,7 @@ async function verifyGoogleAuthentication() {
 }
 
 app.post('/google', async (req, res) => {
+    var token = req.body.token || 'XXX';
     var googleUser = await verifyGoogleAuthentication(token)
         .catch(e => {
             return res.status(403).json(
@@ -89,7 +90,7 @@ app.post('/google', async (req, res) => {
                 errors: err
             })
         }
-        if (UsuarioDB === false) {
+        if (UsuarioDB) {
             if (UsuarioDB.google) {
                 return res.status(400).json({
                     ok: false,
@@ -136,16 +137,12 @@ app.post('/google', async (req, res) => {
 
     })
 
-
-
-
-
-    return res.status(200).json(
-        {
-            ok: true,
-            googleUser: googleUser
-        }
-    );
+    // return res.status(200).json(
+    //     {
+    //         ok: true,
+    //         googleUser: googleUser
+    //     }
+    // );
 })
 
 module.exports = app;

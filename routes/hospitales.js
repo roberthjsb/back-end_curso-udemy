@@ -13,7 +13,7 @@ app.get('/', (req, res) => {
     .limit(5)
     .populate('usuario','nombre email')
     .exec( (err, hospitales) => {
-        if (err) {
+        if (err) { 
             return res.status(500).json({
                 ok: false,
                 mensaje: 'Error cargando hospitales.'

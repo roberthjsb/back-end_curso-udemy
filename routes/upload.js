@@ -5,9 +5,9 @@ const Medico = require('../models/medico');
 const usuario = require('../models/usuario');
 const fs = require('fs');
 
-app.use(fileUpload());
 
 const app = express();
+app.use(fileUpload());
 app.put('/:tipo/:id', (req, res, next) => {
     var tipo = req.params.tipo;
     var id = req.params.id;

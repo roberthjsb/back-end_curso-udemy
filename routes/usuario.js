@@ -35,22 +35,9 @@ desde=Number(desde);
         })
 });
 
-app.use('/', (req, res, next) => {
-    let token = req.query.token;
-    jwt.verify(token, SEED, (err, decoded) => {
-        if (err) {
-            return res.status(401).json({
-                ok: false,
-                mensaje: 'token incorrecto.',
-                error: err
-            });
-        }
-        next();
-    })
-})
 
 
-app.post('/', mAutenticacion.verify, (req, res) => {
+app.post('/', (req, res) => {
 
     let body = req.body;
     let usuario = new Usuario({
@@ -74,7 +61,24 @@ app.post('/', mAutenticacion.verify, (req, res) => {
             usuarios: usuarioGuardado
         });
     })
+    // return res.status(200).json({
+    //     ok: true,
+    //     usuarios:usuario
+    // });
 });
+// app.use('/', (req, res, next) => {
+//     let token = req.query.token;
+//     jwt.verify(token, SEED, (err, decoded) => {
+//         if (err) {
+//             return res.status(401).json({
+//                 ok: false,
+//                 mensaje: 'token incorrecto.',
+//                 error: err
+//             });
+//         }
+//         next();
+//     })
+// })
 
 app.put('/:id', mAutenticacion.verify, (req, res) => {
     let id = req.params.id;
