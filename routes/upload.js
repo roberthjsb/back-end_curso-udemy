@@ -13,11 +13,11 @@ app.put('/:tipo/:id', (req, res, next) => {
     var id = req.params.id;
 
     var tiposValidos = ['medicos', 'hospitales', 'usuarios'];
-    if (tiposValidos.indexOf(() => extension) < 0) {
+    if (tiposValidos.indexOf(tipo) < 0) {
         return res.status(400).json({
             ok: false,
-            mensaje: 'colección invalida',
-            error: { mensaje: 'colección invalida' }
+            mensaje: 'Tipo de colección no es válida',
+            errors: { message: 'Tipo de colección no es válida' }
         });
     }
 
@@ -28,11 +28,11 @@ app.put('/:tipo/:id', (req, res, next) => {
             error: { mensaje: 'Debe seleccionar una imgen' }
         });
     }
-    var archivo = req.files.imagen;
+    var archivo = req.files.image;
     var nombreCortado = archivo.name.split('.');
     var extension = nombreCortado[nombreCortado.length - 1];
     var extensionesValidas = ['jpg', 'png', 'gif', 'jpeg'];
-    if (extensionesValidas.indexOf(() => extension) < 0) {
+    if (extensionesValidas.indexOf( extension) < 0) {
         return res.status(400).json({
             ok: false,
             mensaje: 'Extension invalida',
@@ -56,7 +56,7 @@ app.put('/:tipo/:id', (req, res, next) => {
 
 });
 function subirPorTipo(tipo, id, nombreArchivo, res) {
-    if (tipo === 'usurio') {
+    if (tipo === 'usuarios') {
         usuario.findById(id, (err, usuario) => {
             if(err){
                 return res.status(400).json({
@@ -74,7 +74,7 @@ function subirPorTipo(tipo, id, nombreArchivo, res) {
             usuario.save((err, usurioActualizado) => {
 
                 return res.status(200).json({
-                    ok: false,
+                    ok: true,
                     mensaje: 'usuario actualizado',
                     usuario: usurioActualizado
                 });

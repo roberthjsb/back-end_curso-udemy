@@ -10,8 +10,8 @@ app.get('/', (req, res) => {
     let desde = req.query.desde || 0;
     desde = Number(desde);
     Medico.find({})
-    .skip(desde)
-    .limit(5)
+    // .skip(desde)
+    // .limit(5)
         .populate('usuario', 'nombre email').populate('hospital', 'nombre')
         .exec((err, medico) => {
             if (err) {
@@ -31,7 +31,34 @@ app.get('/', (req, res) => {
 
         });
 });
+app.get('/:id',  (req, res) => {
+    let id = req.params.id;
+    let body = req.body;
 
+    Medico.findById(id, (err, medicoEncotrado) => {
+        if (err) {
+            console.log('\x1b[32m%s\x1b[0m Express server error:');
+            return res.status(500).json({
+                ok: false,
+                mensaje: 'Error buscar medico.'
+                , error: err
+            });
+        }
+        if (!medicoEncotrado) {
+            return res.status(400).json({
+                ok: false,
+                mensaje: `Médico con id ${id} no existe`
+                , error: { message: 'No existe médic con este ID' }
+            });
+        }
+        else{
+            return res.status(200).json({
+                ok: true,
+                medico: medicoEncotrado
+            });
+        }}
+        )
+})
 app.use('/', (req, res, next) => {
     let token = req.query.token;
     jwt.verify(token, SEED, (err, decoded) => {
@@ -47,13 +74,14 @@ app.use('/', (req, res, next) => {
 })
 
 
+
 app.post('/', mAutenticacion.verify, (req, res) => {
     let body = req.body;
 
     let medico = new Medico({
         nombre: body.nombre,
         img: body.img,
-        usuario: body.usuario,
+        usuario: req.usuario,
         hospital: body.hospital,
     });
 
@@ -67,7 +95,7 @@ app.post('/', mAutenticacion.verify, (req, res) => {
         }
         return res.status(201).json({
             ok: true,
-            hospital: medicoGuardado
+            medico: medicoGuardado
         });
 
     })

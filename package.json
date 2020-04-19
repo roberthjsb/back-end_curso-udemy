@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js",
     "dev": "nodemon --watch ./ app.js",
-    "debug": "nodemon --inspect ./"
+    "debug": "nodemon --inspect ./app.js"
   },
   "author": "Roberth Salazar",
   "license": "ISC",

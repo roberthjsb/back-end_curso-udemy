@@ -91,7 +91,7 @@ app.post('/google', async (req, res) => {
             })
         }
         if (UsuarioDB) {
-            if (UsuarioDB.google) {
+            if (UsuarioDB.google === false) {
                 return res.status(400).json({
                     ok: false,
                     mensaje: 'Debe usar su autenticacion normal',

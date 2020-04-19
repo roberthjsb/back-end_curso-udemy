@@ -13,7 +13,7 @@ app.get('/', (req, res, next) => {
 let desde =req.query.desde||0;
 desde=Number(desde);
 
-    Usuario.find({}, 'nombre email img role')
+    Usuario.find({}, 'nombre email img role google')
         .skip(desde)
         .limit(5)
         .exec((err, usuarios) => {
@@ -99,9 +99,11 @@ app.put('/:id', mAutenticacion.verify, (req, res) => {
                 , error: { message: 'No existe usuario con este ID' }
             });
         }
+        console.log(body);
         usuario.nombre = body.nombre;
         usuario.email = body.email;
         usuario.role = body.role;
+        usuario.img=body.img;
 
         usuario.save((err, usuarioGuardado) => {
             if (err) {

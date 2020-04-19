@@ -26,21 +26,21 @@ app.get('/todo/:busqueda', (req, res) => {
 
 app.get('/colecciones/:tabla/:busqueda', (req, resp) => {
     let busqueda = req.params.busqueda;
-    let tabla = req.param.tabla;
-
+    let tabla = req.params.tabla;
+    var regex = new RegExp(busqueda, 'i');
     let promesa;
     switch (tabla) {
-        case 'usuario':
+        case 'usuarios':
             promesa = BuscarUsuario(busqueda, regex);
             break;
-        case 'medico':
+        case 'medicos':
             promesa = BuscarMedico(busqueda, regex);
             break;
         case 'hospitales':
             promesa = BuscarHospital(busqueda, regex);
             break;
         default:
-            return res.status(400).json({
+            return resp.status(400).json({
                 ok: false,
                 mensaje: 'Los tipos de busquedas medico, usuario y hospitales',
                 error: { mensaje: 'tipo de tabla/colección no es valida' }
@@ -48,7 +48,7 @@ app.get('/colecciones/:tabla/:busqueda', (req, resp) => {
     }
 
     promesa.then((data) => {
-        return res.status(400).json({
+        return resp.status(200).json({
             ok: true,
             [tabla]: data,
         });
